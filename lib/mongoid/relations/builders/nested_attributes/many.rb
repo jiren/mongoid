@@ -20,6 +20,7 @@ module Mongoid # :nodoc:
           # @return [ Array ] The attributes.
           def build(parent)
             @existing = parent.send(metadata.name)
+            @existing_objects = @existing.collect.entries
             if over_limit?(attributes)
               raise Errors::TooManyNestedAttributeRecords.new(existing, options[:limit])
             end
@@ -94,7 +95,8 @@ module Mongoid # :nodoc:
             if id = attrs.extract_id
               first = existing.first
               converted = first ? convert_id(first.class, id) : id
-              doc = existing.find(converted)
+              #doc = existing.find(converted)
+              doc = @existing_objects.find{|record| record.id == converted}
               if destroyable?(attrs)
                 existing.delete(doc)
                 doc.destroy unless doc.embedded?
