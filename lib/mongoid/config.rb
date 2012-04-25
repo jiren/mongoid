@@ -53,6 +53,23 @@ module Mongoid #:nodoc
       end
     end
 
+    # keys to remove from self to not pass through to Mongo::Connection
+    PRIVATE_OPTIONS =
+      %w(uri host hosts port database databases username
+         password logger use_activesupport_time_zone)
+
+    # Get the blacklisted options from passing through to the driver.
+    #
+    # @example Get the blacklisted options.
+    #   Config.blacklisted_options
+    #
+    # @return [ Array<String> ] The blacklist.
+    #
+    # @since 2.4.7
+    def blacklisted_options
+      PRIVATE_OPTIONS + settings.keys.map(&:to_s)
+    end
+
     # Get any extra databases that have been configured.
     #
     # @example Get the extras.

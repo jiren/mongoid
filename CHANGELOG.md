@@ -3,9 +3,130 @@
 For instructions on upgrading to newer versions, visit
 [mongoid.org](http://mongoid.org/docs/upgrading.html).
 
-## 2.4.5 (branch: 2.4.0-stable)
+## 2.4.10 (branch: 2.4.0-stable)
 
 ### Resolved Issues
+
+## 2.4.9
+
+### Resolved Issues
+
+* \#1943 Ensure numericality validation works for big decimals.
+
+* \#1938 Length validation now works with localized fields.
+
+* \#1936 Conflicting pushes with other pushes is now properly handled.
+
+* \#1933 `Proxy#extend` should delegate through to the target, where
+  extending the proxy itself is now handled through `Proxy#proxy_extend`.
+
+* \#1930 Ensure complex criteria are expanded in all where clauses.
+  (Hans Hasselberg)
+
+* \#1928 Deletion of embedded documents via nested attributes now performs
+  a $pull with id match criteria instead of a $pullAll to cover all cases.
+  Previously newly added defaults to documents that had already persisted
+  could not be deleted in this matter since the doc did not match what was
+  in the database.
+
+* \#1924/\#1917 Fix pushing to embedded relations with default scopes not
+  scoping on the new document. (Hans Hasselberg)
+
+* \#1922/\#1919 Dropping collections unmemoizes the internally wrapped
+  collection, in order to ensure when defining capped collections that
+  they are always recreated as capped. (Hans Hasselberg)
+
+* \#1916/\#1913 Uniqueness validation no longer is affected by the default
+  scope. (Hans Hasselberg)
+
+* \#1778 Ensure foreign keys are always set regardless of binding state.
+
+## 2.4.8
+
+### Resolved Issues
+
+* \#1892 When getting not master operation error, Mongoid should reconnect
+  before retrying the operation.
+
+* \#1887 Don't cascade callbacks to children that don't have the callback
+  defined.
+
+* \#1882 Don't expand duplicate id criterion into an $and with duplicate
+  selections.
+
+* \#1878 Fixed default application values not to apply in certain `only`
+  or `without` selection on iteration, not just `first` and `last`.
+
+* \#1874 Fixed the reject all blank proc constant to handle values
+  properly with a destroy non blank value. (Stefan Daschek)
+
+* \#1869/\#1868 Delayed atomic sets now uses the atomic path instead of
+  the metadata name to fix multiple level embedding issues.
+  (Chris Micacchi provided specs)
+
+* \#1866 Post processed defaults (procs) should be applied post binding
+  of the child in a relation.build.
+
+## 2.4.7
+
+### Resolved Issues
+
+* Ensure reloading of embedded documents retains reference to the parent.
+
+* \#1837 Always pass symbol options to the driver.
+
+* \#1836 Ensure relation counts pick up persisted document that have not
+  had the foreign key link persisted.
+
+* \#1820 Destroying embedded documents in an embeds_many should also
+  removed the document from the underlying _uncoped target and reindex
+  the relation.
+
+* \#1814 Don't cascade callbacks on after_initialize.
+
+* \#1800 Invalid options for the Mongo connection are now filtered out.
+
+* \#1785 Case equality has been fixed to handle instance checks properly.
+
+## 2.4.6
+
+### Resolved Issues
+
+* \#1772 Allow skip and limit to convert strings to integers. (Jean Boussier)
+
+* \#1767 Model#update_attributes accepts mass assignment options again.
+  (Hans Hasselberg)
+
+* \#1762 Criteria#any_of now properly handles localized fields.
+
+* \#1758 Metadata now returns self on options for external library support.
+
+* \#1757 Ensure serialization converts any attribute types to the type
+  defined by the field.
+
+* \#1756 Serializable hash options should pass through to embedded docs.
+
+## 2.4.5
+
+### Resolved Issues
+
+* \#1751 Mongoid's logger now responds to level for Ruby logging API
+  compatibility.
+
+* \#1744/#1750 Sorting works now for localized fields in embedded documents
+  using the criteria API. (Hans Hasselberg)
+
+* \#1746 Presence validation now shows which locales were empty for
+  localized fields. (Cyril Mougel)
+
+* \#1727 Allow dot notation in embedded criteria to work on both embeds one
+  and embeds many. (Lyle Underwood)
+
+* \#1723 Initialize callbacks should cascade through children without needing
+  to determine if the child is changed.
+
+* \#1715 Serializable hashes are now consistent on inclusion of embedded
+  documents per or post save.
 
 * \#1713 Fixing === checks when comparing a class with an instance of a
   subclass.

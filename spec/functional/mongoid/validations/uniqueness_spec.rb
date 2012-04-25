@@ -128,6 +128,36 @@ describe Mongoid::Validations::UniquenessValidator do
           end
         end
 
+        context "when a default scope is on the model" do
+
+          before do
+            Dictionary.validates_uniqueness_of :name
+            Dictionary.default_scope(Dictionary.where(:year => 1990))
+          end
+
+          after do
+            Dictionary.default_scoping = nil
+            Dictionary.reset_callbacks(:validate)
+          end
+
+          context "when the document with the unqiue attribute is not in default scope" do
+            context "when the attribute is not unique" do
+
+              before do
+                Dictionary.create(:name => "Oxford")
+              end
+
+              let(:dictionary) do
+                Dictionary.new(:name => "Oxford")
+              end
+
+              it "returns false" do
+                dictionary.should_not be_valid
+              end
+            end
+          end
+        end
+
         context "when a single scope is provided" do
 
           before do
@@ -172,10 +202,10 @@ describe Mongoid::Validations::UniquenessValidator do
 
             let(:personal_folder) { Folder.create!(:name => "Personal") }
             let(:public_folder)   { Folder.create!(:name => "Public") }
-            
+
             before do
-              personal_folder.folder_items << FolderItem.new(:name => "non-unique") 
-              public_folder.folder_items   << FolderItem.new(:name => "non-unique") 
+              personal_folder.folder_items << FolderItem.new(:name => "non-unique")
+              public_folder.folder_items   << FolderItem.new(:name => "non-unique")
             end
 
             let(:item) { public_folder.folder_items.last }

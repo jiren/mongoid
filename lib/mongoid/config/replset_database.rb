@@ -17,11 +17,9 @@ module Mongoid #:nodoc:
         # yes, construction is weird but the driver wants
         # "A list of host-port pairs ending with a hash containing any options"
         # mongo likes symbols
-        options = self.inject({ :logger => Mongoid::Logger.new }) do |memo, (k, v)|
-          memo[k.to_sym] = v
-          memo
-        end
-        connection = Mongo::ReplSetConnection.new(*(hosts.clone << options))
+        options = reject{ |key, value| Config.blacklisted_options.include?(key.to_s) }
+        options["logger"] = Mongoid::Logger.new
+        connection = Mongo::ReplSetConnection.new(*(hosts.clone << options.symbolize_keys))
 
         if authenticating?
           connection.add_auth(database, username, password)

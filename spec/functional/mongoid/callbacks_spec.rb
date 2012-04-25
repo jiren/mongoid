@@ -3,10 +3,61 @@ require "spec_helper"
 describe Mongoid::Callbacks do
 
   before do
-    [ Band, ParentDoc, ValidationCallback ].each(&:delete_all)
+    [ Band, ParentDoc, Person, ValidationCallback ].each(&:delete_all)
   end
 
   context "when cascading callbacks" do
+
+    context "when the parent has a custom callback" do
+
+      before(:all) do
+        Band.define_model_callbacks(:rearrange)
+      end
+
+      after(:all) do
+        Band.reset_callbacks(:rearrange)
+      end
+
+      context "when the child does not have the same callback defined" do
+
+        let(:band) do
+          Band.new
+        end
+
+        let!(:record) do
+          band.records.build
+        end
+
+        it "does not cascade to the child" do
+          band.run_callbacks(:rearrange).should be_true
+        end
+      end
+    end
+
+    context "when cascading after initialize" do
+
+      let!(:person) do
+        Person.create(:ssn => "123-11-1112")
+      end
+
+      before do
+        person.services.create!(:sid => 1)
+      end
+
+      it "only executes the cascading callbacks once" do
+        Service.any_instance.expects(:after_initialize_called=).once
+        Person.find(person.id).should eq(person)
+      end
+    end
+
+    context "when attempting to cascade on a referenced relation" do
+
+      it "raises an error" do
+        expect {
+          Band.has_and_belongs_to_many :tags, :cascade_callbacks => true
+        }.to raise_error(Mongoid::Errors::InvalidOptions)
+      end
+    end
 
     context "when the documents are embedded one level" do
 
